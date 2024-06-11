@@ -1,0 +1,8 @@
+## Interface: 11502
+## Title: Progession Helper
+## Notes: Progression prequest stuff.
+## Author: xD
+## Version: 1.0
+## SavedVariables: ProgressionHelperSavedState
+
+ProgressionHelper.lua
