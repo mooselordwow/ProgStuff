@@ -25,12 +25,7 @@ local manualOverrides = {}
 local waypointReference
 local autoMarkEnabled = true
 local toggleAutoMarkCheckbox
-
-local function HandleFinalStepCompletion()
-    if frame then
-        frame:Hide()
-    end
-end
+local currentStepIndex = 1
 
 local waypoints = {
     {mapID = 1449, x = 71.6, y = 76.0, title = "Torwa Pathfinder"},
@@ -109,7 +104,7 @@ local steps = {
     {stepText = "Step 34: Hand in Rise, Obsidion!", details = {"NPC: Curator Thorius", "Quest 1: Rise, Obsidion!"}, checked = false},
     {stepText = "Step 35: Hand in A Little Slime Goes a Long Way", details = {"NPC: Laris Geardawdle", "Quest 1: A Little Slime Goes a Long Way"}, checked = false},
     {stepText = "Step 36: Hand in Cloths (2/2) (step doesn't autocomplete)", details = {"NPC: Bubulo Acerbus"}, checked = false},
-    {stepText = "Step 37: Sort Inventory, Consumes, don't forget BRD note, check step to close UI and TomTom and kekbye", checked = false},
+    {stepText = "Step 37: Sort Inventory, consumes, don't forget BRD note, check step to close UI and TomTom and kekbye", checked = false},
 }
 
 -- quest dictionary
@@ -133,12 +128,12 @@ local questDictionary = {
     ["Snickerfang Jowls"] = 2581,
     ["The Decisive Striker"] = 2585,
     ["The Stones That Bind Us"] = 2681,
-	["Heroes of Old"] = 2702,
+    ["Heroes of Old"] = 2702,
     ["Heroes of Old"] = 2701,
     ["Cleansing Felwood"] = 4101,
     ["A Final Blow"] = 5242,
     ["The Remains of Trey Lightforge"] = 5385,
-	["Felbound Ancients"] = 4441,
+    ["Felbound Ancients"] = 4441,
     ["Further Corruption"] = 4906,
     ["Verifying the Corruption"] = 5156,
     ["Calm Before the Storm"] = 4508,
@@ -147,10 +142,16 @@ local questDictionary = {
     ["Morrowgrain Research"] = 3781,
     ["Good Natured Emma"] = 5048,
     ["Into The Temple of Atal'Hakkar"] = 1475,
-	["Return to Tymor"] = 3461,
+    ["Return to Tymor"] = 3461,
     ["Rise, Obsidion!"] = 3566,
     ["A Little Slime Goes a Long Way"] = 4513,
 }
+
+local function HandleFinalStepCompletion()
+    if frame then
+        frame:Hide()
+    end
+end
 
 -- Function to create a quest checkbox
 local function CreateQuestCheckbox(questID)
@@ -159,12 +160,8 @@ local function CreateQuestCheckbox(questID)
     taskCheckbox.questID = questID
 
     local function UpdateQuestCheckbox()
-        if not autoMarkEnabled then
-            return
-        end
-        if manualOverrides[taskCheckbox.questID] then
-            return
-        end
+        if not autoMarkEnabled then return end
+        if manualOverrides[taskCheckbox.questID] then return end
         if C_QuestLog.IsQuestFlaggedCompleted(questID) then
             taskCheckbox:SetChecked(true)
         else
@@ -190,6 +187,9 @@ local function LoadSavedState()
             if checklistItems[stepIndex] then
                 checklistItems[stepIndex].checkbox:SetChecked(state)
                 manualOverrides[stepIndex] = state
+                if state then
+                    currentStepIndex = math.max(currentStepIndex, stepIndex + 1)
+                end
             end
         end
         autoMarkEnabled = ProgressionHelperSavedState.autoMarkEnabled or true
@@ -201,9 +201,7 @@ end
 
 -- Save the current state
 local function SaveCurrentState()
-    ProgressionHelperSavedState = {
-        autoMarkEnabled = autoMarkEnabled
-    }
+    ProgressionHelperSavedState = { autoMarkEnabled = autoMarkEnabled }
     for stepIndex, item in ipairs(checklistItems) do
         ProgressionHelperSavedState[stepIndex] = item.checkbox:GetChecked()
     end
@@ -245,20 +243,10 @@ local function IsStepCompleted(stepIndex)
     return checkbox and checkbox:GetChecked()
 end
 
--- Function to check if a step can be unchecked
-local function CanUncheckStep(stepIndex)
-    for i = stepIndex + 1, #steps do
-        if IsStepCompleted(i) then
-            return false
-        end
-    end
-    return true
-end
-
--- Function to update the waypoint and arrow display based on the highest completed step
+-- Function to update the waypoint and arrow display based on the current step
 local function UpdateWaypoint()
     RemoveTomTomWaypoint()
-    for stepIndex = 1, #steps do
+    for stepIndex = 1, #steps do 
         if not IsStepCompleted(stepIndex) then
             local waypoint = waypoints[stepIndex]
             if waypoint then
@@ -269,23 +257,10 @@ local function UpdateWaypoint()
     end
 end
 
-local function MarkPreviousSteps(stepIndex)
-    for i = stepIndex - 1, 1, -1 do
-        if not IsStepCompleted(i) then
-            checklistItems[i].checkbox:SetChecked(true)
-            manualOverrides[i] = true
-        end
-    end
-end
-
+-- Function to check if all tasks are completed for a step and mark the main checkbox
 local function CheckAllTasksCompleted(mainCheckbox, taskCheckboxes, stepIndex)
-    if #taskCheckboxes == 0 then
-        return
-    end
-
-    if manualOverrides[stepIndex] then
-        return
-    end
+    if #taskCheckboxes == 0 then return end
+    if manualOverrides[stepIndex] then return end
 
     local allCompleted = true
     for _, taskCheckbox in ipairs(taskCheckboxes) do
@@ -294,32 +269,26 @@ local function CheckAllTasksCompleted(mainCheckbox, taskCheckboxes, stepIndex)
             break
         end
     end
-    
+
     mainCheckbox:SetChecked(allCompleted)
     if allCompleted then
         manualOverrides[stepIndex] = true
-        MarkPreviousSteps(stepIndex)
     end
 end
 
-local function UpdateChecklistFromStep(stepIndex)
-    if IsStepCompleted(stepIndex) then
-        MarkPreviousSteps(stepIndex)
-        
-        if stepIndex == 37 then
-            HandleFinalStepCompletion()
-        end
+-- Function to update the checklist from the current step
+local function UpdateChecklistFromStep()
+    currentStepIndex = 1
+    while currentStepIndex <= #checklistItems and IsStepCompleted(currentStepIndex) do
+        currentStepIndex = currentStepIndex + 1
     end
 
-    for i = stepIndex + 1, #checklistItems do
-        if not IsStepCompleted(i) then
-            checklistItems[i].checkbox:SetChecked(false)
-            manualOverrides[i] = false
-        end
+    if currentStepIndex > #checklistItems then
+        HandleFinalStepCompletion() 
     end
+
+    UpdateWaypoint()
 end
-
-
 
 -- Function to create a checklist item with optional bullet list for details
 local function CreateChecklistItem(parent, stepText, details, yPosition, checked, stepIndex)
@@ -345,7 +314,6 @@ local function CreateChecklistItem(parent, stepText, details, yPosition, checked
             bulletFont:SetJustifyH("LEFT")
             bulletFont:SetText("• " .. detail)
 
-            -- Check if the detail corresponds to a quest in the dictionary
             for questName, questID in pairs(questDictionary) do
                 if detail:find(questName) then
                     local taskCheckbox = CreateQuestCheckbox(questID)
@@ -373,7 +341,7 @@ local function CreateChecklistItem(parent, stepText, details, yPosition, checked
 
     local ticker
     if autoMarkEnabled then
-        ticker = C_Timer.NewTicker(2, function()
+        ticker = C_Timer.NewTicker(1, function()
             if autoMarkEnabled then
                 CheckAllTasksCompleted(checkbox, taskCheckboxes, stepIndex)
             end
@@ -382,22 +350,13 @@ local function CreateChecklistItem(parent, stepText, details, yPosition, checked
 
     checkbox:SetScript("OnClick", function(self)
         local isChecked = self:GetChecked()
-        
-        if not isChecked and not CanUncheckStep(stepIndex) then
-            self:SetChecked(true)
-            print("Cannot uncheck this step as a subsequent step is already completed.")
-            return
-        end
-        
+
         manualOverrides[stepIndex] = isChecked
-        UpdateChecklistFromStep(stepIndex)
+        UpdateChecklistFromStep()
         UpdateWaypoint()
 
-        if not autoMarkEnabled then
-            MarkPreviousSteps(stepIndex)
-            if ticker then
-                ticker:Cancel()
-            end
+        if not autoMarkEnabled and ticker then
+            ticker:Cancel()
         end
     end)
 
@@ -442,16 +401,16 @@ for i, step in ipairs(steps) do
     currentYPosition = currentYPosition - totalHeight - 10
 end
 
-C_Timer.After(2, function()
+C_Timer.After(1, function()
     if autoMarkEnabled and not IsStepCompleted(1) then
         checklistItems[1].checkbox:SetChecked(true)
         manualOverrides[1] = true
-        UpdateChecklistFromStep(1)
+        UpdateChecklistFromStep()
         print("Step 1 automatically marked as complete")
     end
 end)
 
-C_Timer.NewTicker(2, function()
+C_Timer.NewTicker(1, function()
     if autoMarkEnabled then
         for i, item in ipairs(checklistItems) do
             CheckAllTasksCompleted(item.checkbox, item.taskCheckboxes or {}, i)
