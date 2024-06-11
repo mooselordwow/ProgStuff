@@ -68,7 +68,7 @@ local waypoints = {
 
 -- steps array
 local steps = {
-    {stepText = "Step 1: Start summons to North Un'Goro camp", details = {"Additional Info: Download TomTom for waypoints. Disable auto completion of quests if you have completed some quests that are in the list and mark steps manually."}, checked = false},
+    {stepText = "Step 1: Start summons to North Un'Goro camp", details = {"Additional Info: Download TomTom for waypoints. Disable auto completion if steps/waypoints bug."}, checked = false},
     {stepText = "Step 2: Hand in South camp", details = {"NPC: Torwa Pathfinder", "Quest 1: The Bait for Lar'korwi", "Quest 2: The Mighty U'cha"}, checked = false},
     {stepText = "Step 3: Hand in Chasing A Me 01", details = {"NPC: Karna Remtravel", "Quest 1: Chasing A Me 01"}, checked = false},
     {stepText = "Step 4: Hand in It's Dangerous to Go Alone", details = {"NPC: Linken", "Quest 1: It's Dangerous to Go Alone"}, checked = false},
