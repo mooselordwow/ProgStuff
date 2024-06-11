@@ -8,12 +8,12 @@ frame:SetScript("OnDragStart", frame.StartMoving)
 frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 frame:Show()
 
-local name = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-name:SetPoint("TOPRIGHT", frame, "TOP", -20, -5)
-name:SetText("Progression Helper Checklist")
+local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+title:SetPoint("TOPRIGHT", frame, "TOP", -20, -5)
+title:SetText("Progression Helper Checklist")
 
 local stepIndicator = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-stepIndicator:SetPoint("TOPLEFT", name, "TOPRIGHT", 105, 0)
+stepIndicator:SetPoint("TOPLEFT", title, "TOPRIGHT", 105, 0)
 stepIndicator:SetText("Current Step: 1")
 
 local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
@@ -32,42 +32,42 @@ local toggleAutoMarkCheckbox
 local currentStepIndex = 1
 
 local waypoints = {
-    {mapID = 1449, x = 71.6, y = 76.0, name = "Torwa Pathfinder"},
-    {mapID = 1449, x = 71.6, y = 76.0, name = "Torwa Pathfinder"},
-    {mapID = 1449, x = 46.4, y = 13.4, name = "Karna Remtravel"},
-    {mapID = 1449, x = 44.6, y = 8.2, name = "Linken"},
-    {mapID = 1449, x = 43.0, y = 9.6, name = "Muigin"},
-    {mapID = 1449, x = 43.6, y = 8.6, name = "Spraggle Frock"},
-    {mapID = 1449, x = 43.8, y = 7.2, name = "Williden Marshal"},
-    {mapID = 1449, x = 41.8, y = 2.4, name = "J.D. Collie"},
-    {mapID = 1419, x = 51.8, y = 35.6, name = "Kum'isha the Collector"},
-    {mapID = 1419, x = 51.8, y = 35.6, name = "Kum'isha the Collector"},
-    {mapID = 1419, x = 50.6, y = 14.2, name = "Bloodmage Lynnore"},
-    {mapID = 1419, x = 50.6, y = 14.2, name = "Bloodmage Drazial"},
-    {mapID = 1435, x = 34.2, y = 66.0, name = "Fallen Hero of the Horde"},
-    {mapID = 1448, x = 54.2, y = 86.8, name = "Arathandris Silversky"},
-    {mapID = 1448, x = 54.2, y = 86.8, name = "Arathandris Silversky"},
-    {mapID = 1448, x = 51.2, y = 82.2, name = "Greta Mosshoof"},
-    {mapID = 1448, x = 51.2, y = 82.0, name = "Jessir Moonbow"},
-    {mapID = 1448, x = 51.2, y = 81.6, name = "Eridan Bluewind"},
-    {mapID = 1448, x = 50.8, y = 81.6, name = "Taronn Redfeather"},
-    {mapID = 1457, x = 42.0, y = 85.8, name = "Gracina Spiritmight"},
-    {mapID = 1457, x = 39.8, y = 42.6, name = "Idriana"},
-    {mapID = 1457, x = 34.8, y = 8.8, name = "Arch Druid Fandral Staghelm"},
-    {mapID = 1457, x = 31.8, y = 7.0, name = "Jenal"},
-    {mapID = 1457, x = 34.8, y = 7.4, name = "Mathrengyl Bearwalker"},
-    {mapID = 1457, x = 63.2, y = 23.0, name = "Raedon Duskstriker"},
-    {mapID = 1457, x = 58.0, y = 34.6, name = "Alliance Brigadier General"},
-    {mapID = 1453, x = 37.8, y = 80.2, name = "Garion Wendell"},
-    {mapID = 1453, x = 44.2, y = 73.6, name = "Clavicus Knavingham"},
-    {mapID = 1453, x = 48.4, y = 30.6, name = "Royal Factor Bathrilor"},
-    {mapID = 1453, x = 52.4, y = 41.8, name = "Ol Emma"},
-    {mapID = 1453, x = 64.2, y = 20.8, name = "Brohann Caskbelly"},
-    {mapID = 1455, x = 31.2, y = 4.6, name = "Tymor"},
-    {mapID = 1455, x = 43.6, y = 31.8, name = "Mistina Steelshield"},
-    {mapID = 1455, x = 71.6, y = 16.6, name = "Curator Thorius"},
-    {mapID = 1455, x = 75.6, y = 23.6, name = "Laris Geardawdle"},
-    {mapID = 1455, x = 73.8, y = 47.8, name = "Bubulo Acerbus"},
+    {mapID = 1449, x = 71.6, y = 76.0, title = "Torwa Pathfinder"},
+    {mapID = 1449, x = 71.6, y = 76.0, title = "Torwa Pathfinder"},
+    {mapID = 1449, x = 46.4, y = 13.4, title = "Karna Remtravel"},
+    {mapID = 1449, x = 44.6, y = 8.2, title = "Linken"},
+    {mapID = 1449, x = 43.0, y = 9.6, title = "Muigin"},
+    {mapID = 1449, x = 43.6, y = 8.6, title = "Spraggle Frock"},
+    {mapID = 1449, x = 43.8, y = 7.2, title = "Williden Marshal"},
+    {mapID = 1449, x = 41.8, y = 2.4, title = "J.D. Collie"},
+    {mapID = 1419, x = 51.8, y = 35.6, title = "Kum'isha the Collector"},
+    {mapID = 1419, x = 51.8, y = 35.6, title = "Kum'isha the Collector"},
+    {mapID = 1419, x = 50.6, y = 14.2, title = "Bloodmage Lynnore"},
+    {mapID = 1419, x = 50.6, y = 14.2, title = "Bloodmage Drazial"},
+    {mapID = 1435, x = 34.2, y = 66.0, title = "Fallen Hero of the Horde"},
+    {mapID = 1448, x = 54.2, y = 86.8, title = "Arathandris Silversky"},
+    {mapID = 1448, x = 54.2, y = 86.8, title = "Arathandris Silversky"},
+    {mapID = 1448, x = 51.2, y = 82.2, title = "Greta Mosshoof"},
+    {mapID = 1448, x = 51.2, y = 82.0, title = "Jessir Moonbow"},
+    {mapID = 1448, x = 51.2, y = 81.6, title = "Eridan Bluewind"},
+    {mapID = 1448, x = 50.8, y = 81.6, title = "Taronn Redfeather"},
+    {mapID = 1457, x = 42.0, y = 85.8, title = "Gracina Spiritmight"},
+    {mapID = 1457, x = 39.8, y = 42.6, title = "Idriana"},
+    {mapID = 1457, x = 34.8, y = 8.8, title = "Arch Druid Fandral Staghelm"},
+    {mapID = 1457, x = 31.8, y = 7.0, title = "Jenal"},
+    {mapID = 1457, x = 34.8, y = 7.4, title = "Mathrengyl Bearwalker"},
+    {mapID = 1457, x = 63.2, y = 23.0, title = "Raedon Duskstriker"},
+    {mapID = 1457, x = 58.0, y = 34.6, title = "Alliance Brigadier General"},
+    {mapID = 1453, x = 37.8, y = 80.2, title = "Garion Wendell"},
+    {mapID = 1453, x = 44.2, y = 73.6, title = "Clavicus Knavingham"},
+    {mapID = 1453, x = 48.4, y = 30.6, title = "Royal Factor Bathrilor"},
+    {mapID = 1453, x = 52.4, y = 41.8, title = "Ol Emma"},
+    {mapID = 1453, x = 64.2, y = 20.8, title = "Brohann Caskbelly"},
+    {mapID = 1455, x = 31.2, y = 4.6, title = "Tymor"},
+    {mapID = 1455, x = 43.6, y = 31.8, title = "Mistina Steelshield"},
+    {mapID = 1455, x = 71.6, y = 16.6, title = "Curator Thorius"},
+    {mapID = 1455, x = 75.6, y = 23.6, title = "Laris Geardawdle"},
+    {mapID = 1455, x = 73.8, y = 47.8, title = "Bubulo Acerbus"},
 }
 
 -- steps array
@@ -217,13 +217,13 @@ local function IsTomTomAvailable()
     return TomTom ~= nil
 end
 
-local function SetTomTomWaypoint(mapID, x, y, name)
+local function SetTomTomWaypoint(mapID, x, y, title)
     if IsTomTomAvailable() then
         if waypointReference then
             TomTom:RemoveWaypoint(waypointReference)
         end
         waypointReference = TomTom:AddWaypoint(mapID, x / 100, y / 100, {
-            name = name,
+            title = title,
             persistent = nil,
             minimap = true,
             world = true
@@ -251,7 +251,7 @@ local function UpdateWaypoint()
         if not IsStepCompleted(stepIndex) then
             local waypoint = waypoints[stepIndex]
             if waypoint then
-                SetTomTomWaypoint(waypoint.mapID, waypoint.x, waypoint.y, waypoint.name)
+                SetTomTomWaypoint(waypoint.mapID, waypoint.x, waypoint.y, waypoint.title)
             end
             break
         end
