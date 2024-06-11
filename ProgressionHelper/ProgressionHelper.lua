@@ -8,9 +8,13 @@ frame:SetScript("OnDragStart", frame.StartMoving)
 frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 frame:Show()
 
-local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-title:SetPoint("TOP", frame, "TOP", 0, -10)
-title:SetText("Progression Helper Checklist")
+local name = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+name:SetPoint("TOPRIGHT", frame, "TOP", -20, -5)
+name:SetText("Progression Helper Checklist")
+
+local stepIndicator = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+stepIndicator:SetPoint("TOPLEFT", name, "TOPRIGHT", 105, 0)
+stepIndicator:SetText("Current Step: 1")
 
 local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
 scrollFrame:SetPoint("TOPLEFT", 10, -30)
@@ -28,42 +32,42 @@ local toggleAutoMarkCheckbox
 local currentStepIndex = 1
 
 local waypoints = {
-    {mapID = 1449, x = 71.6, y = 76.0, title = "Torwa Pathfinder"},
-    {mapID = 1449, x = 71.6, y = 76.0, title = "Torwa Pathfinder"},
-    {mapID = 1449, x = 46.4, y = 13.4, title = "Karna Remtravel"},
-    {mapID = 1449, x = 44.6, y = 8.2, title = "Linken"},
-    {mapID = 1449, x = 43.0, y = 9.6, title = "Muigin"},
-    {mapID = 1449, x = 43.6, y = 8.6, title = "Spraggle Frock"},
-    {mapID = 1449, x = 43.8, y = 7.2, title = "Williden Marshal"},
-    {mapID = 1449, x = 41.8, y = 2.4, title = "J.D. Collie"},
-    {mapID = 1419, x = 51.8, y = 35.6, title = "Kum'isha the Collector"},
-    {mapID = 1419, x = 51.8, y = 35.6, title = "Kum'isha the Collector"},
-    {mapID = 1419, x = 50.6, y = 14.2, title = "Bloodmage Lynnore"},
-    {mapID = 1419, x = 50.6, y = 14.2, title = "Bloodmage Drazial"},
-    {mapID = 1435, x = 34.2, y = 66.0, title = "Fallen Hero of the Horde"},
-    {mapID = 1448, x = 54.2, y = 86.8, title = "Arathandris Silversky"},
-    {mapID = 1448, x = 54.2, y = 86.8, title = "Arathandris Silversky"},
-    {mapID = 1448, x = 51.2, y = 82.2, title = "Greta Mosshoof"},
-    {mapID = 1448, x = 51.2, y = 82.0, title = "Jessir Moonbow"},
-    {mapID = 1448, x = 51.2, y = 81.6, title = "Eridan Bluewind"},
-    {mapID = 1448, x = 50.8, y = 81.6, title = "Taronn Redfeather"},
-    {mapID = 1457, x = 42.0, y = 85.8, title = "Gracina Spiritmight"},
-    {mapID = 1457, x = 39.8, y = 42.6, title = "Idriana"},
-    {mapID = 1457, x = 34.8, y = 8.8, title = "Arch Druid Fandral Staghelm"},
-    {mapID = 1457, x = 31.8, y = 7.0, title = "Jenal"},
-    {mapID = 1457, x = 34.8, y = 7.4, title = "Mathrengyl Bearwalker"},
-    {mapID = 1457, x = 63.2, y = 23.0, title = "Raedon Duskstriker"},
-    {mapID = 1457, x = 58.0, y = 34.6, title = "Alliance Brigadier General"},
-    {mapID = 1453, x = 37.8, y = 80.2, title = "Garion Wendell"},
-    {mapID = 1453, x = 44.2, y = 73.6, title = "Clavicus Knavingham"},
-    {mapID = 1453, x = 48.4, y = 30.6, title = "Royal Factor Bathrilor"},
-    {mapID = 1453, x = 52.4, y = 41.8, title = "Ol Emma"},
-    {mapID = 1453, x = 64.2, y = 20.8, title = "Brohann Caskbelly"},
-    {mapID = 1455, x = 31.2, y = 4.6, title = "Tymor"},
-    {mapID = 1455, x = 43.6, y = 31.8, title = "Mistina Steelshield"},
-    {mapID = 1455, x = 71.6, y = 16.6, title = "Curator Thorius"},
-    {mapID = 1455, x = 75.6, y = 23.6, title = "Laris Geardawdle"},
-    {mapID = 1455, x = 73.8, y = 47.8, title = "Bubulo Acerbus"},
+    {mapID = 1449, x = 71.6, y = 76.0, name = "Torwa Pathfinder"},
+    {mapID = 1449, x = 71.6, y = 76.0, name = "Torwa Pathfinder"},
+    {mapID = 1449, x = 46.4, y = 13.4, name = "Karna Remtravel"},
+    {mapID = 1449, x = 44.6, y = 8.2, name = "Linken"},
+    {mapID = 1449, x = 43.0, y = 9.6, name = "Muigin"},
+    {mapID = 1449, x = 43.6, y = 8.6, name = "Spraggle Frock"},
+    {mapID = 1449, x = 43.8, y = 7.2, name = "Williden Marshal"},
+    {mapID = 1449, x = 41.8, y = 2.4, name = "J.D. Collie"},
+    {mapID = 1419, x = 51.8, y = 35.6, name = "Kum'isha the Collector"},
+    {mapID = 1419, x = 51.8, y = 35.6, name = "Kum'isha the Collector"},
+    {mapID = 1419, x = 50.6, y = 14.2, name = "Bloodmage Lynnore"},
+    {mapID = 1419, x = 50.6, y = 14.2, name = "Bloodmage Drazial"},
+    {mapID = 1435, x = 34.2, y = 66.0, name = "Fallen Hero of the Horde"},
+    {mapID = 1448, x = 54.2, y = 86.8, name = "Arathandris Silversky"},
+    {mapID = 1448, x = 54.2, y = 86.8, name = "Arathandris Silversky"},
+    {mapID = 1448, x = 51.2, y = 82.2, name = "Greta Mosshoof"},
+    {mapID = 1448, x = 51.2, y = 82.0, name = "Jessir Moonbow"},
+    {mapID = 1448, x = 51.2, y = 81.6, name = "Eridan Bluewind"},
+    {mapID = 1448, x = 50.8, y = 81.6, name = "Taronn Redfeather"},
+    {mapID = 1457, x = 42.0, y = 85.8, name = "Gracina Spiritmight"},
+    {mapID = 1457, x = 39.8, y = 42.6, name = "Idriana"},
+    {mapID = 1457, x = 34.8, y = 8.8, name = "Arch Druid Fandral Staghelm"},
+    {mapID = 1457, x = 31.8, y = 7.0, name = "Jenal"},
+    {mapID = 1457, x = 34.8, y = 7.4, name = "Mathrengyl Bearwalker"},
+    {mapID = 1457, x = 63.2, y = 23.0, name = "Raedon Duskstriker"},
+    {mapID = 1457, x = 58.0, y = 34.6, name = "Alliance Brigadier General"},
+    {mapID = 1453, x = 37.8, y = 80.2, name = "Garion Wendell"},
+    {mapID = 1453, x = 44.2, y = 73.6, name = "Clavicus Knavingham"},
+    {mapID = 1453, x = 48.4, y = 30.6, name = "Royal Factor Bathrilor"},
+    {mapID = 1453, x = 52.4, y = 41.8, name = "Ol Emma"},
+    {mapID = 1453, x = 64.2, y = 20.8, name = "Brohann Caskbelly"},
+    {mapID = 1455, x = 31.2, y = 4.6, name = "Tymor"},
+    {mapID = 1455, x = 43.6, y = 31.8, name = "Mistina Steelshield"},
+    {mapID = 1455, x = 71.6, y = 16.6, name = "Curator Thorius"},
+    {mapID = 1455, x = 75.6, y = 23.6, name = "Laris Geardawdle"},
+    {mapID = 1455, x = 73.8, y = 47.8, name = "Bubulo Acerbus"},
 }
 
 -- steps array
@@ -104,7 +108,7 @@ local steps = {
     {stepText = "Step 34: Hand in Rise, Obsidion!", details = {"NPC: Curator Thorius", "Quest 1: Rise, Obsidion!"}, checked = false},
     {stepText = "Step 35: Hand in A Little Slime Goes a Long Way", details = {"NPC: Laris Geardawdle", "Quest 1: A Little Slime Goes a Long Way"}, checked = false},
     {stepText = "Step 36: Hand in Cloths (2/2) (step doesn't autocomplete)", details = {"NPC: Bubulo Acerbus"}, checked = false},
-    {stepText = "Step 37: Sort Inventory, consumes, don't forget BRD note, check step to close UI and TomTom and kekbye", checked = false},
+    {stepText = "Step 37: Sort Inventory, Consumes, don't forget BRD note, check step to close UI and TomTom and kekbye", checked = false},
 }
 
 -- quest dictionary
@@ -153,7 +157,6 @@ local function HandleFinalStepCompletion()
     end
 end
 
--- Function to create a quest checkbox
 local function CreateQuestCheckbox(questID)
     local taskCheckbox = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
     taskCheckbox:SetChecked(C_QuestLog.IsQuestFlaggedCompleted(questID))
@@ -180,46 +183,47 @@ local function CreateQuestCheckbox(questID)
     return taskCheckbox
 end
 
--- Load saved state if available
 local function LoadSavedState()
     if ProgressionHelperSavedState then
-        for stepIndex, state in pairs(ProgressionHelperSavedState) do
+        for stepIndex, state in pairs(ProgressionHelperSavedState.steps or {}) do
             if checklistItems[stepIndex] then
                 checklistItems[stepIndex].checkbox:SetChecked(state)
                 manualOverrides[stepIndex] = state
-                if state then
-                    currentStepIndex = math.max(currentStepIndex, stepIndex + 1)
-                end
             end
         end
         autoMarkEnabled = ProgressionHelperSavedState.autoMarkEnabled or true
+        currentStepIndex = ProgressionHelperSavedState.currentStepIndex or 1
+
         if toggleAutoMarkCheckbox then
             toggleAutoMarkCheckbox:SetChecked(autoMarkEnabled)
         end
+
+        stepIndicator:SetText("Current Step: " .. currentStepIndex)
     end
 end
 
--- Save the current state
 local function SaveCurrentState()
-    ProgressionHelperSavedState = { autoMarkEnabled = autoMarkEnabled }
+    ProgressionHelperSavedState = {
+        autoMarkEnabled = autoMarkEnabled,
+        currentStepIndex = currentStepIndex,
+        steps = {}
+    }
     for stepIndex, item in ipairs(checklistItems) do
-        ProgressionHelperSavedState[stepIndex] = item.checkbox:GetChecked()
+        ProgressionHelperSavedState.steps[stepIndex] = item.checkbox:GetChecked()
     end
 end
 
--- Function to check if TomTom is available
 local function IsTomTomAvailable()
     return TomTom ~= nil
 end
 
--- Function to set a waypoint using TomTom
-local function SetTomTomWaypoint(mapID, x, y, title)
+local function SetTomTomWaypoint(mapID, x, y, name)
     if IsTomTomAvailable() then
         if waypointReference then
             TomTom:RemoveWaypoint(waypointReference)
         end
         waypointReference = TomTom:AddWaypoint(mapID, x / 100, y / 100, {
-            title = title,
+            name = name,
             persistent = nil,
             minimap = true,
             world = true
@@ -229,7 +233,6 @@ local function SetTomTomWaypoint(mapID, x, y, title)
     end
 end
 
--- Function to remove the waypoint
 local function RemoveTomTomWaypoint()
     if waypointReference and IsTomTomAvailable() then
         TomTom:RemoveWaypoint(waypointReference)
@@ -237,27 +240,24 @@ local function RemoveTomTomWaypoint()
     end
 end
 
--- Function to check if a step is completed
 local function IsStepCompleted(stepIndex)
     local checkbox = checklistItems[stepIndex].checkbox
     return checkbox and checkbox:GetChecked()
 end
 
--- Function to update the waypoint and arrow display based on the current step
 local function UpdateWaypoint()
     RemoveTomTomWaypoint()
     for stepIndex = 1, #steps do 
         if not IsStepCompleted(stepIndex) then
             local waypoint = waypoints[stepIndex]
             if waypoint then
-                SetTomTomWaypoint(waypoint.mapID, waypoint.x, waypoint.y, waypoint.title)
+                SetTomTomWaypoint(waypoint.mapID, waypoint.x, waypoint.y, waypoint.name)
             end
             break
         end
     end
 end
 
--- Function to check if all tasks are completed for a step and mark the main checkbox
 local function CheckAllTasksCompleted(mainCheckbox, taskCheckboxes, stepIndex)
     if #taskCheckboxes == 0 then return end
     if manualOverrides[stepIndex] then return end
@@ -276,7 +276,6 @@ local function CheckAllTasksCompleted(mainCheckbox, taskCheckboxes, stepIndex)
     end
 end
 
--- Function to update the checklist from the current step
 local function UpdateChecklistFromStep()
     currentStepIndex = 1
     while currentStepIndex <= #checklistItems and IsStepCompleted(currentStepIndex) do
@@ -287,10 +286,11 @@ local function UpdateChecklistFromStep()
         HandleFinalStepCompletion() 
     end
 
+    stepIndicator:SetText("Current Step: " .. currentStepIndex)
+
     UpdateWaypoint()
 end
 
--- Function to create a checklist item with optional bullet list for details
 local function CreateChecklistItem(parent, stepText, details, yPosition, checked, stepIndex)
     local checkbox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
     checkbox:SetPoint("TOPLEFT", 10, yPosition)
@@ -384,12 +384,17 @@ toggleAutoMarkCheckbox:SetScript("OnClick", function(self)
                 item.ticker:Cancel()
             end
         end
+        -- Reset current step index
+        currentStepIndex = 1
+        stepIndicator:SetText("Current Step: " .. currentStepIndex)
     else
         for i, item in ipairs(checklistItems) do
             if IsStepCompleted(i) then
                 UpdateChecklistFromStep(i)
             end
         end
+        -- Update current step index
+        UpdateChecklistFromStep()
     end
     print("Auto completion of quests is now " .. (autoMarkEnabled and "enabled" or "disabled") .. ".")
 end)
@@ -406,7 +411,6 @@ C_Timer.After(1, function()
         checklistItems[1].checkbox:SetChecked(true)
         manualOverrides[1] = true
         UpdateChecklistFromStep()
-        print("Step 1 automatically marked as complete")
     end
 end)
 
@@ -418,7 +422,6 @@ C_Timer.NewTicker(1, function()
     end
 end)
 
--- Regularly update waypoint based on current step completion
 C_Timer.NewTicker(1, function()
     UpdateWaypoint()
 end)
